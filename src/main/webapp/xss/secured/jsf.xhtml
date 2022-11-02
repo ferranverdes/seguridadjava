@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>JSF XSS</title>
+    </h:head>
+    <h:body>
+        
+        <h1>JSF XSS </h1>
+        <h:form>
+            <span class="ui-float-label">
+                <p:inputText id="title" value="#{postBean.newPost.title}"/>
+                <p:outputLabel for="@previous" value="Título"/>
+            </span>
+            <span class="ui-float-label">
+                <p:inputText id="author" value="#{postBean.newPost.author}"/>
+                <p:outputLabel for="@previous" value="Autor"/>
+            </span>
+            <span class="ui-float-label">
+                <p:inputTextarea id="content" rows="6" cols="33" value="#{postBean.newPost.content}"/>
+                <p:outputLabel for="@previous" value="Contenido"/>
+            </span>
+            <span class="ui-float-label">
+                <p:inputTextarea id="url" rows="6" cols="33" value="#{postBean.newPost.url}"/>
+                <p:outputLabel for="@previous" value="URL del autor"/>
+            </span>
+            <p:commandButton type="submit" value="Insertar" action="#{postBean.insertPost()}" update="postsListForm:postsDataTable"></p:commandButton>
+        </h:form>
+        
+        <h:form id="postsListForm">
+            <p:dataTable id="postsDataTable" value="#{postBean.posts}" var="post" rowKey="#{post.postId}">
+                <f:facet name="header">
+                    Listado Posts
+                </f:facet>
+                <p:column headerText="Id">
+                    <h:outputText value="#{post.postId}" />
+                </p:column>
+
+                <p:column headerText="Título">
+                        <h:outputText value="#{post.title}" />
+                </p:column>
+
+                <p:column headerText="Autor">
+                        <h:outputText value="#{post.author}" />
+                </p:column>
+
+                <p:column headerText="Contenido">
+                        <h:outputText value="#{post.content}" />
+                </p:column>
+                <p:column headerText="URL">
+                    <h:outputLink value="#{post.url}">URL del autor insegura</h:outputLink>
+                    <!-- Lista blanca de protocolos -->
+                </p:column>
+                <p:column headerText="Acciones">
+                    <p:commandButton type="submit" value="Borrar" action="#{postBean.deletePost(post)}" update="postsListForm:postsDataTable"></p:commandButton>
+                </p:column>
+                
+                 <f:facet name="footer">
+                     <div class="p-text-justify">Nº Posts: #{fn:length(postBean.posts)}</div>
+                 </f:facet>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>
